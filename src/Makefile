@@ -16,6 +16,9 @@
 
 -include local.mk
 
+DEFS += "-DHAVE_LED=0"
+BUILD_DIR = ./build
+
 BINARY = dapboot
 OPENCM3_DIR = ../libopencm3
 

@@ -60,7 +60,7 @@ void target_clock_setup(void) {
     rcc_clock_setup_in_hsi_out_48mhz();
 #else
     /* Set system clock to 72 MHz from an external crystal */
-    rcc_clock_setup_in_hse_8mhz_out_72mhz();
+    rcc_clock_setup_in_hse_16mhz_out_72mhz();
 #endif
 }
 
@@ -75,6 +75,9 @@ void target_gpio_setup(void) {
     if (USES_GPIOC) {
         rcc_periph_clock_enable(RCC_GPIOC);
     }
+
+    // holter 48
+    rcc_periph_clock_enable(RCC_GPIOE);
 
     /* Setup LEDs */
 #if HAVE_LED
@@ -123,6 +126,10 @@ void target_gpio_setup(void) {
         /* Drive the USB DP pin to override the pull-up */
         gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_10_MHZ,
                       GPIO_CNF_OUTPUT_PUSHPULL, GPIO12);
+
+        // holter 48
+        gpio_set_mode(GPIOE, GPIO_MODE_OUTPUT_10_MHZ,
+                GPIO_CNF_OUTPUT_PUSHPULL, GPIO10);
     }
 #endif
 }
@@ -140,10 +147,17 @@ const usbd_driver* target_usb_init(void) {
 #else
     /* Override hard-wired USB pullup to disconnect and reconnect */
     gpio_clear(GPIOA, GPIO12);
+
+    // holter 48
+    gpio_set(GPIOE, GPIO10);
+
     int i;
     for (i = 0; i < 800000; i++) {
         __asm__("nop");
     }
+
+    // holter 48
+    gpio_clear(GPIOE, GPIO10);
 #endif
 
     return &st_usbfs_v1_usb_driver;
